@@ -1,0 +1,57 @@
+[package]
+name = "taskforge-api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Web framework
+axum = { version = "0.7", features = ["ws", "macros"] }
+tower = { version = "0.4", features = ["full"] }
+tower-http = { version = "0.5", features = ["fs", "cors", "trace"] }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "migrate"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Authentication & Security
+jsonwebtoken = "9"
+argon2 = "0.5"
+uuid = { version = "1.0", features = ["serde", "v4"] }
+
+# Redis
+redis = { version = "0.26", features = ["tokio-comp", "connection-manager"] }
+
+# Environment & Configuration
+dotenvy = "0.15"
+config = "0.14"
+
+# Logging & Tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Date & Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Validation
+validator = { version = "0.18", features = ["derive"] }
+
+# File uploads
+multer = "3.0"
+
+# HTTP client (for external integrations)
+reqwest = { version = "0.12", features = ["json"] }
+
+[dev-dependencies]
+# Testing
+http-body-util = "0.1"
+tower = { version = "0.4", features = ["util"] }

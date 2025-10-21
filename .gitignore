@@ -1,0 +1,47 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# Frontend build
+/frontend/dist/
+/frontend/pkg/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Docker
+docker-compose.override.yml
+
+# Uploads
+/backend/uploads/*
+!/backend/uploads/.gitkeep
+
+# Node (if using npm for TailwindCSS)
+node_modules/
+package-lock.json
+
+# Self guides (keeping these local, not in git)
+/docs/
