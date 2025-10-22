@@ -68,22 +68,22 @@ async fn main() {
         .allow_headers(Any);
 
     // Build application routes
-    let app = Router::new()
-        .route("/", get(root))
-        .route("/health", get(health_check))
-        // Public auth routes
-        .route("/api/auth/register", post(api::register))
-        .route("/api/auth/login", post(api::login))
-        // Protected auth routes
+    let protected_routes = Router::new()
         .route("/api/auth/me", get(api::me))
-        // Protected organization routes
         .route("/api/organizations", post(api::create_organization).get(api::get_my_organizations))
         .route("/api/organizations/:org_id", get(api::get_organization))
         .route("/api/organizations/:org_id/members", get(api::get_organization_members))
         .route_layer(axum_middleware::from_fn_with_state(
             state.clone(),
             crate::middleware::auth_middleware,
-        ))
+        ));
+
+    let app = Router::new()
+        .route("/", get(root))
+        .route("/health", get(health_check))
+        .route("/api/auth/register", post(api::register))
+        .route("/api/auth/login", post(api::login))
+        .merge(protected_routes)
         .with_state(state)
         .layer(cors)
         .layer(tower_http::trace::TraceLayer::new_for_http());

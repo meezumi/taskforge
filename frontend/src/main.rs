@@ -6,8 +6,11 @@ mod components;
 mod pages;
 mod services;
 
-use pages::{home::Home, login::Login, dashboard::Dashboard, not_found::NotFound};
-use components::provide_auth_context;
+use pages::{
+    dashboard::Dashboard, home::Home, login::Login, not_found::NotFound,
+    organization_detail::OrganizationDetail, organizations::Organizations,
+};
+use components::{provide_auth_context, provide_organization_context};
 
 #[component]
 fn App() -> impl IntoView {
@@ -15,6 +18,9 @@ fn App() -> impl IntoView {
     
     // Provide auth context to the entire app
     let _auth = provide_auth_context();
+    
+    // Provide organization context
+    let _org = provide_organization_context();
 
     view! {
         <Stylesheet id="leptos" href="/pkg/taskforge-frontend.css"/>
@@ -27,6 +33,8 @@ fn App() -> impl IntoView {
                     <Route path="/" view=Home/>
                     <Route path="/login" view=Login/>
                     <Route path="/dashboard" view=Dashboard/>
+                    <Route path="/organizations" view=Organizations/>
+                    <Route path="/organizations/:org_id" view=OrganizationDetail/>
                     <Route path="/*any" view=NotFound/>
                 </Routes>
             </main>

@@ -102,7 +102,10 @@ pub async fn post<T: Serialize, R: for<'de> Deserialize<'de>>(
 
     // Add Authorization header if token exists
     if let Some(token) = get_token() {
+        log::debug!("Adding Authorization header with token: {}...", &token[..token.len().min(20)]);
         request = request.header("Authorization", &format!("Bearer {}", token));
+    } else {
+        log::warn!("No token found in localStorage for request to {}", endpoint);
     }
 
     let response = request.body(body_json)?.send().await?;
@@ -114,6 +117,7 @@ pub async fn post<T: Serialize, R: for<'de> Deserialize<'de>>(
         let error_text = response.text().await.unwrap_or_else(|_| {
             format!("HTTP error: {}", response.status())
         });
+        log::error!("API error for {}: {}", endpoint, error_text);
         Err(ApiError {
             message: error_text,
         })

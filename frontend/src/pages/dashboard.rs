@@ -125,14 +125,17 @@ pub fn Dashboard() -> impl IntoView {
                                         <div class="mt-6 bg-white shadow rounded-lg p-6">
                                             <h3 class="text-lg font-medium text-gray-900 mb-4">"Quick Actions"</h3>
                                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                                <A
+                                                    href="/organizations"
+                                                    class="inline-flex items-center justify-center px-4 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                >
+                                                    "Organizations"
+                                                </A>
                                                 <button class="inline-flex items-center justify-center px-4 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                                     "Create Project"
                                                 </button>
                                                 <button class="inline-flex items-center justify-center px-4 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                                     "View Tasks"
-                                                </button>
-                                                <button class="inline-flex items-center justify-center px-4 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                                    "Team Settings"
                                                 </button>
                                             </div>
                                         </div>

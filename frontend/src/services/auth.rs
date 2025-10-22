@@ -76,7 +76,15 @@ pub async fn login(email: String, password: String) -> Result<AuthResponse, ApiE
     let response: AuthResponse = api::post("/api/auth/login", &request).await?;
     
     // Save token to localStorage
+    log::info!("Login successful, saving token: {}...", &response.token[..response.token.len().min(20)]);
     api::set_token(&response.token);
+    
+    // Verify token was saved
+    if let Some(saved_token) = api::get_token() {
+        log::info!("Token verified in localStorage: {}...", &saved_token[..saved_token.len().min(20)]);
+    } else {
+        log::error!("Failed to save token to localStorage!");
+    }
     
     Ok(response)
 }
