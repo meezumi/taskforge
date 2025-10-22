@@ -1,12 +1,15 @@
 use axum::{
-    routing::{get, post},
+    routing::get,
     Router,
     response::Json,
+    extract::State,
 };
 use serde_json::{json, Value};
 use std::net::SocketAddr;
+use std::sync::Arc;
 use tower_http::cors::{CorsLayer, Any};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use sqlx::postgres::PgPoolOptions;
 
 mod api;
 mod config;
@@ -14,6 +17,15 @@ mod middleware;
 mod models;
 mod services;
 mod utils;
+
+use config::Config;
+use utils::Result;
+
+#[derive(Clone)]
+pub struct AppState {
+    pub db: sqlx::PgPool,
+    pub config: Arc<Config>,
+}
 
 #[tokio::main]
 async fn main() {
@@ -31,6 +43,25 @@ async fn main() {
 
     tracing::info!("🚀 TaskForge API starting...");
 
+    // Load configuration
+    let config = Arc::new(Config::from_env().expect("Failed to load configuration"));
+    
+    // Create database connection pool
+    tracing::info!("📊 Connecting to database...");
+    let db = PgPoolOptions::new()
+        .max_connections(config.database.max_connections)
+        .connect(&config.database.url)
+        .await
+        .expect("Failed to connect to database");
+    
+    tracing::info!("✅ Database connected");
+
+    // Create app state
+    let state = AppState {
+        db: db.clone(),
+        config: config.clone(),
+    };
+
     // Configure CORS
     let cors = CorsLayer::new()
         .allow_origin(Any)
@@ -41,13 +72,12 @@ async fn main() {
     let app = Router::new()
         .route("/", get(root))
         .route("/health", get(health_check))
+        .with_state(state)
         .layer(cors)
         .layer(tower_http::trace::TraceLayer::new_for_http());
 
-    // Get server address from environment or use default
-    let host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
-    let addr: SocketAddr = format!("{}:{}", host, port)
+    // Get server address from config
+    let addr: SocketAddr = format!("{}:{}", config.server.host, config.server.port)
         .parse()
         .expect("Failed to parse address");
 

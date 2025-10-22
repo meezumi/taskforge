@@ -1,1 +1,3 @@
-// Utility functions module
+pub mod error;
+
+pub use error::{AppError, Result};
