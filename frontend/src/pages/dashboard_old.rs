@@ -1,10 +1,11 @@
 use leptos::*;
-use leptos_router::A;
+use leptos_router::use_navigate;
 use crate::components::use_auth_context;
 
 #[component]
 pub fn Dashboard() -> impl IntoView {
     let auth = use_auth_context();
+    let navigate = use_navigate();
 
     // Load user on mount
     create_effect(move |_| {
@@ -14,6 +15,15 @@ pub fn Dashboard() -> impl IntoView {
             });
         }
     });
+
+    let on_logout = move |_| {
+        auth.logout();
+        navigate("/login", Default::default());
+    };
+
+    let on_login_nav = move |_| {
+        navigate("/login", Default::default());
+    };
 
     view! {
         <div class="min-h-screen bg-gray-50">
@@ -27,7 +37,7 @@ pub fn Dashboard() -> impl IntoView {
                         <div class="flex items-center space-x-4">
                             <Show
                                 when=move || auth.user.get().is_some()
-                                fallback=|| view! {}
+                                fallback=|| view! { <div></div> }
                             >
                                 {move || {
                                     let user = auth.user.get().unwrap();
@@ -37,10 +47,7 @@ pub fn Dashboard() -> impl IntoView {
                                                 {user.full_name()}
                                             </span>
                                             <button
-                                                on:click=move |_| {
-                                                    auth.logout();
-                                                    window().location().set_href("/login").ok();
-                                                }
+                                                on:click=on_logout
                                                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                             >
                                                 "Logout"
@@ -61,16 +68,16 @@ pub fn Dashboard() -> impl IntoView {
                     fallback=move || view! {
                         <Show
                             when=move || auth.user.get().is_some()
-                            fallback=|| view! {
+                            fallback=move || view! {
                                 <div class="flex justify-center items-center h-64">
                                     <div class="text-center">
                                         <p class="text-gray-500 mb-4">"Please log in to continue"</p>
-                                        <A
-                                            href="/login"
+                                        <button
+                                            on:click=on_login_nav
                                             class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
                                         >
                                             "Go to Login"
-                                        </A>
+                                        </button>
                                     </div>
                                 </div>
                             }
@@ -156,8 +163,4 @@ pub fn Dashboard() -> impl IntoView {
             </div>
         </div>
     }
-}
-
-fn window() -> web_sys::Window {
-    web_sys::window().expect("no global `window` exists")
 }

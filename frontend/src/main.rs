@@ -7,10 +7,14 @@ mod pages;
 mod services;
 
 use pages::{home::Home, login::Login, dashboard::Dashboard, not_found::NotFound};
+use components::provide_auth_context;
 
 #[component]
 fn App() -> impl IntoView {
     provide_meta_context();
+    
+    // Provide auth context to the entire app
+    let _auth = provide_auth_context();
 
     view! {
         <Stylesheet id="leptos" href="/pkg/taskforge-frontend.css"/>
