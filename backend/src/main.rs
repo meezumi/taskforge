@@ -1,8 +1,8 @@
 use axum::{
-    routing::get,
+    routing::{get, post},
     Router,
     response::Json,
-    extract::State,
+    middleware as axum_middleware,
 };
 use serde_json::{json, Value};
 use std::net::SocketAddr;
@@ -19,7 +19,6 @@ mod services;
 mod utils;
 
 use config::Config;
-use utils::Result;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -72,6 +71,19 @@ async fn main() {
     let app = Router::new()
         .route("/", get(root))
         .route("/health", get(health_check))
+        // Public auth routes
+        .route("/api/auth/register", post(api::register))
+        .route("/api/auth/login", post(api::login))
+        // Protected routes
+        .nest(
+            "/api/auth",
+            Router::new()
+                .route("/me", get(api::me))
+                .route_layer(axum_middleware::from_fn_with_state(
+                    state.clone(),
+                    crate::middleware::auth_middleware,
+                ))
+        )
         .with_state(state)
         .layer(cors)
         .layer(tower_http::trace::TraceLayer::new_for_http());

@@ -137,3 +137,9 @@ impl From<Organization> for OrganizationResponse {
         }
     }
 }
+
+// Extractor for authenticated user ID
+#[derive(Debug, Clone)]
+pub struct AuthUser {
+    pub user_id: String,
+}
