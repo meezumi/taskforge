@@ -25,7 +25,9 @@ pub struct Organization {
     pub name: String,
     pub slug: String,
     pub description: Option<String>,
-    pub settings: serde_json::Value,
+    pub logo_url: Option<String>,
+    pub website: Option<String>,
+    pub is_active: bool,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -36,9 +38,8 @@ pub struct OrganizationMember {
     pub organization_id: Uuid,
     pub user_id: Uuid,
     pub role: String,
+    pub invited_by: Option<Uuid>,
     pub joined_at: DateTime<Utc>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

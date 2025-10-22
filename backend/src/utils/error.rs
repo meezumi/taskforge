@@ -10,6 +10,9 @@ use serde_json::json;
 #[derive(Error, Debug)]
 pub enum AppError {
     #[error("Database error: {0}")]
+    DatabaseError(String),
+
+    #[error("Database error")]
     Database(#[from] sqlx::Error),
 
     #[error("Validation error: {0}")]
@@ -28,6 +31,9 @@ pub enum AppError {
     Conflict(String),
 
     #[error("Internal server error: {0}")]
+    InternalServerError(String),
+
+    #[error("Internal server error: {0}")]
     Internal(String),
 
     #[error("Bad request: {0}")]
@@ -43,6 +49,10 @@ pub type Result<T> = std::result::Result<T, AppError>;
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, error_message) = match self {
+            AppError::DatabaseError(ref msg) => {
+                tracing::error!("Database error: {}", msg);
+                (StatusCode::INTERNAL_SERVER_ERROR, "Database error occurred")
+            }
             AppError::Database(ref e) => {
                 tracing::error!("Database error: {:?}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "Database error occurred")
@@ -56,6 +66,10 @@ impl IntoResponse for AppError {
             AppError::ExternalService(ref msg) => {
                 tracing::error!("External service error: {}", msg);
                 (StatusCode::BAD_GATEWAY, "External service error")
+            }
+            AppError::InternalServerError(ref msg) => {
+                tracing::error!("Internal server error: {}", msg);
+                (StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
             }
             AppError::Internal(ref msg) => {
                 tracing::error!("Internal error: {}", msg);
