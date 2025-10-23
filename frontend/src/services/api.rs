@@ -123,3 +123,57 @@ pub async fn post<T: Serialize, R: for<'de> Deserialize<'de>>(
         })
     }
 }
+
+/// Make a PUT request
+pub async fn put<T: Serialize, R: for<'de> Deserialize<'de>>(
+    endpoint: &str,
+    body: &T,
+) -> Result<R, ApiError> {
+    let url = format!("{}{}", API_BASE_URL, endpoint);
+    let body_json = serde_json::to_string(body)?;
+    
+    let mut request = Request::put(&url)
+        .header("Content-Type", "application/json");
+
+    // Add Authorization header if token exists
+    if let Some(token) = get_token() {
+        request = request.header("Authorization", &format!("Bearer {}", token));
+    }
+
+    let response = request.body(body_json)?.send().await?;
+    
+    if response.ok() {
+        let data = response.json::<R>().await?;
+        Ok(data)
+    } else {
+        let error_text = response.text().await.unwrap_or_else(|_| {
+            format!("HTTP error: {}", response.status())
+        });
+        Err(ApiError {
+            message: error_text,
+        })
+    }
+}
+
+/// Make a DELETE request
+pub async fn delete(endpoint: &str) -> Result<(), String> {
+    let url = format!("{}{}", API_BASE_URL, endpoint);
+    
+    let mut request = Request::delete(&url);
+
+    // Add Authorization header if token exists
+    if let Some(token) = get_token() {
+        request = request.header("Authorization", &format!("Bearer {}", token));
+    }
+
+    let response = request.send().await.map_err(|e| e.to_string())?;
+    
+    if response.ok() {
+        Ok(())
+    } else {
+        let error_text = response.text().await.unwrap_or_else(|_| {
+            format!("HTTP error: {}", response.status())
+        });
+        Err(error_text)
+    }
+}

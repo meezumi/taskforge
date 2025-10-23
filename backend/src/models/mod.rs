@@ -42,6 +42,30 @@ pub struct OrganizationMember {
     pub joined_at: DateTime<Utc>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct Project {
+    pub id: Uuid,
+    pub organization_id: Uuid,
+    pub name: String,
+    pub slug: String,
+    pub description: Option<String>,
+    pub status: String,
+    pub color: Option<String>,
+    pub created_by: Uuid,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct ProjectMember {
+    pub id: Uuid,
+    pub project_id: Uuid,
+    pub user_id: Uuid,
+    pub role: String,
+    pub added_by: Option<Uuid>,
+    pub added_at: DateTime<Utc>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum MemberRole {
     Owner,
@@ -135,6 +159,54 @@ impl From<Organization> for OrganizationResponse {
             slug: org.slug,
             description: org.description,
             created_at: org.created_at,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateProjectRequest {
+    pub name: String,
+    pub slug: String,
+    pub description: Option<String>,
+    pub status: Option<String>,
+    pub color: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateProjectRequest {
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub status: Option<String>,
+    pub color: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ProjectResponse {
+    pub id: Uuid,
+    pub organization_id: Uuid,
+    pub name: String,
+    pub slug: String,
+    pub description: Option<String>,
+    pub status: String,
+    pub color: Option<String>,
+    pub created_by: Uuid,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+impl From<Project> for ProjectResponse {
+    fn from(project: Project) -> Self {
+        ProjectResponse {
+            id: project.id,
+            organization_id: project.organization_id,
+            name: project.name,
+            slug: project.slug,
+            description: project.description,
+            status: project.status,
+            color: project.color,
+            created_by: project.created_by,
+            created_at: project.created_at,
+            updated_at: project.updated_at,
         }
     }
 }

@@ -1,5 +1,5 @@
 use axum::{
-    routing::{get, post},
+    routing::{get, post, put, delete},
     Router,
     response::Json,
     middleware as axum_middleware,
@@ -73,6 +73,8 @@ async fn main() {
         .route("/api/organizations", post(api::create_organization).get(api::get_my_organizations))
         .route("/api/organizations/:org_id", get(api::get_organization))
         .route("/api/organizations/:org_id/members", get(api::get_organization_members))
+        .route("/api/organizations/:org_id/projects", post(api::create_project).get(api::get_organization_projects))
+        .route("/api/projects/:project_id", get(api::get_project).put(api::update_project).delete(api::delete_project))
         .route_layer(axum_middleware::from_fn_with_state(
             state.clone(),
             crate::middleware::auth_middleware,

@@ -91,12 +91,20 @@ pub fn OrganizationDetail() -> impl IntoView {
                                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                                     <div class="flex items-start justify-between">
                                         <div>
-                                            <h1 class="text-3xl font-bold text-gray-900">{org_name}</h1>
-                                            <p class="text-sm text-gray-500 mt-1">{"@"}{org_slug}</p>
+                                            <h1 class="text-3xl font-bold text-gray-900">{org_name.clone()}</h1>
+                                            <p class="text-sm text-gray-500 mt-1">{"@"}{org_slug.clone()}</p>
                                         </div>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
-                                            {org_role.unwrap_or_else(|| "member".to_string())}
-                                        </span>
+                                        <div class="flex items-center space-x-3">
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                                                {org_role.unwrap_or_else(|| "member".to_string())}
+                                            </span>
+                                            <A
+                                                href=format!("/organizations/{}/projects", org.id)
+                                                class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+                                            >
+                                                "View Projects"
+                                            </A>
+                                        </div>
                                     </div>
 
                                     <Show when=move || has_desc>
