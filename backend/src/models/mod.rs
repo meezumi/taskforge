@@ -66,6 +66,45 @@ pub struct ProjectMember {
     pub added_at: DateTime<Utc>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct Task {
+    pub id: Uuid,
+    pub project_id: Uuid,
+    pub title: String,
+    pub description: Option<String>,
+    pub status: String,
+    pub priority: String,
+    pub assigned_to: Option<Uuid>,
+    pub created_by: Uuid,
+    pub due_date: Option<DateTime<Utc>>,
+    pub completed_at: Option<DateTime<Utc>>,
+    pub position: i32,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct TaskComment {
+    pub id: Uuid,
+    pub task_id: Uuid,
+    pub user_id: Uuid,
+    pub content: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct TaskAttachment {
+    pub id: Uuid,
+    pub task_id: Uuid,
+    pub user_id: Uuid,
+    pub filename: String,
+    pub file_path: String,
+    pub file_size: i64,
+    pub mime_type: String,
+    pub created_at: DateTime<Utc>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum MemberRole {
     Owner,
@@ -207,6 +246,93 @@ impl From<Project> for ProjectResponse {
             created_by: project.created_by,
             created_at: project.created_at,
             updated_at: project.updated_at,
+        }
+    }
+}
+
+// Task DTOs
+#[derive(Debug, Deserialize)]
+pub struct CreateTaskRequest {
+    pub title: String,
+    pub description: Option<String>,
+    pub status: Option<String>,
+    pub priority: Option<String>,
+    pub assigned_to: Option<Uuid>,
+    pub due_date: Option<DateTime<Utc>>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateTaskRequest {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub status: Option<String>,
+    pub priority: Option<String>,
+    pub assigned_to: Option<Uuid>,
+    pub due_date: Option<DateTime<Utc>>,
+    pub position: Option<i32>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct TaskResponse {
+    pub id: Uuid,
+    pub project_id: Uuid,
+    pub title: String,
+    pub description: Option<String>,
+    pub status: String,
+    pub priority: String,
+    pub assigned_to: Option<Uuid>,
+    pub created_by: Uuid,
+    pub due_date: Option<DateTime<Utc>>,
+    pub completed_at: Option<DateTime<Utc>>,
+    pub position: i32,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+impl From<Task> for TaskResponse {
+    fn from(task: Task) -> Self {
+        TaskResponse {
+            id: task.id,
+            project_id: task.project_id,
+            title: task.title,
+            description: task.description,
+            status: task.status,
+            priority: task.priority,
+            assigned_to: task.assigned_to,
+            created_by: task.created_by,
+            due_date: task.due_date,
+            completed_at: task.completed_at,
+            position: task.position,
+            created_at: task.created_at,
+            updated_at: task.updated_at,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateCommentRequest {
+    pub content: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct CommentResponse {
+    pub id: Uuid,
+    pub task_id: Uuid,
+    pub user_id: Uuid,
+    pub content: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+impl From<TaskComment> for CommentResponse {
+    fn from(comment: TaskComment) -> Self {
+        CommentResponse {
+            id: comment.id,
+            task_id: comment.task_id,
+            user_id: comment.user_id,
+            content: comment.content,
+            created_at: comment.created_at,
+            updated_at: comment.updated_at,
         }
     }
 }

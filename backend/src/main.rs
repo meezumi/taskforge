@@ -75,6 +75,9 @@ async fn main() {
         .route("/api/organizations/:org_id/members", get(api::get_organization_members))
         .route("/api/organizations/:org_id/projects", post(api::create_project).get(api::get_organization_projects))
         .route("/api/projects/:project_id", get(api::get_project).put(api::update_project).delete(api::delete_project))
+        .route("/api/projects/:project_id/tasks", post(api::create_task).get(api::get_project_tasks))
+        .route("/api/tasks/:task_id", get(api::get_task).put(api::update_task).delete(api::delete_task))
+        .route("/api/tasks/:task_id/comments", post(api::create_comment).get(api::get_task_comments))
         .route_layer(axum_middleware::from_fn_with_state(
             state.clone(),
             crate::middleware::auth_middleware,

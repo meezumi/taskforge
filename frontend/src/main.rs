@@ -9,7 +9,7 @@ mod services;
 use pages::{
     dashboard::Dashboard, home::Home, login::Login, not_found::NotFound,
     organization_detail::OrganizationDetail, organizations::Organizations,
-    projects::Projects,
+    project_detail::ProjectDetail, projects::Projects,
 };
 use components::{provide_auth_context, provide_organization_context};
 
@@ -37,6 +37,7 @@ fn App() -> impl IntoView {
                     <Route path="/organizations" view=Organizations/>
                     <Route path="/organizations/:org_id" view=OrganizationDetail/>
                     <Route path="/organizations/:org_id/projects" view=Projects/>
+                    <Route path="/organizations/:org_id/projects/:project_id" view=ProjectDetail/>
                     <Route path="/*any" view=NotFound/>
                 </Routes>
             </main>
